@@ -18,71 +18,66 @@
 
 // Estrutura que contém os campos dos registros da agenda
 struct MREC {
-       char name[30];
-       char email[40];
-       char phone[15];
-	   struct MREC *next; // implemente como lista, como árvore BST, AVL...
-	   struct MREC *prev;
+    char name[30];
+    char email[40];
+    char phone[15];
+	struct MREC *next; // implemente como lista, como árvore BST, AVL...
+	struct MREC *prev;
 };
 
 // Tipo criado para instanciar variaveis do tipo agenda
 typedef struct MREC Contact;
 
 // Apresenta o menu da aplicação e retorna a opção selecionada
-int menu()
-{
+int menu() {
+
     int op=0;
-    while (op!=EXIT)
-    {
+    while(op!=EXIT) {
         printf("%d Finaliza",EXIT);
         printf("\n: ");
         scanf("%d",&op);
-       
     }
     return op;
+
 }
 
 // Permite o cadastro de um contato
-void insContact()
-{
-     return;
+void insContact() {
+    return;
 }
 
 // Permite excluir um contato da agenda
-void delContact ()
-{
-     return;
+void delContact() {
+    return;
 }
 
 // Lista o conteudo da agenda (todos os campos)
-void listContacts ()
-{
-     return;
+void listContacts() {
+    return;
 }
 
 // Permite consultar um contato da agenda por nome
-void queryContact ()
-{
-     return;
+void queryContact() {
+    return;
 }
 
 
 // Programa principal
-int main()
-{
+int main() {
+
     int op=0;
     Contact MContact;
 
-    while (op!=EXIT)
-    {
-          op=menu();
-          switch(op)
-          {
-              case 1 : insContact();
-              case 2 : delContact();
-              case 3 : queryContact();
-              case 4 : listContacts();
-          }
+    while(op!=EXIT) {
+        op=menu();
+        switch(op) {
+            case 1 : insContact();
+            case 2 : delContact();
+            case 3 : queryContact();
+            case 4 : listContacts();
+        }
     }
+
     return 0;
+
 }
