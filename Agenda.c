@@ -19,75 +19,16 @@
 
 
 // Estrutura que contém os campos dos registros da agenda
-struct MREC {
+struct node {
     char name[30];
     char email[40];
     char phone[15];
-	struct MREC *next; // implemente como lista, como árvore BST, AVL...
-	struct MREC *prev;
+	struct node *left; // implemente como lista, como árvore BST, AVL...
+	struct node *right;
 };
 
 // Tipo criado para instanciar variaveis do tipo agenda
-typedef struct MREC Contact;
-
-typedef struct {
-    Contact *primeiro;
-    Contact *ultimo;
-    int cont;
-} Fila;
-
-
-// Ordenar a fila 
-int particiona(Fila *fila, int inicio, int fim){
-    
-    Contact *A = fila->primeiro;
-    Contact aux;
-    int pivo = fim;
-    int k = inicio;
-
-    for(int i = inicio; i < fim; i++){
-        if(A[i].name[0] == A[pivo].name[0]){
-            if(A[i].name[1] == A[pivo].name[1]){
-                if(A[i].name[2] < A[pivo].name[2]){
-                    aux = A[i];
-                    A[i] = A[k];
-                    A[k] = aux;
-                    k++;
-            }
-            }
-            else if(A[i].name[1] < A[pivo].name[1]){
-                aux = A[i];
-                A[i] = A[k];
-                A[k] = aux;
-                k++;
-            }
-        }
-        else if(A[i].name[0] < A[pivo].name[0]){
-            aux = A[i];
-            A[i] = A[k];
-            A[k] = aux;
-            k++;
-        }
-    }
-    if(A[k].name[0] > A[pivo].name[0]){
-        aux = A[k];
-        A[k] = A[pivo];
-        A[pivo] = aux;
-    }
-
-    return k;
-
-}
-void quickSort(Fila *fila, int inicio, int fim){
-    int pivo = 0;
-
-    if(inicio < fim){
-        pivo = particiona(fila, inicio, fim);
-        quickSort(fila, inicio, pivo-1);
-        quickSort(fila, pivo+1, fim);
-    }
-
-}
+typedef struct node Node;
 
 
 // Apresenta o menu da aplicação e retorna a opção selecionada
@@ -97,8 +38,8 @@ int menu() {
 
     printf("1 Inserir Contato\n");
     printf("2 Deletar Contato\n");
-    printf("3 Listar Contatos\n");
-    printf("4 Consultar um Contato\n");
+    printf("3 Consultar um Contato\n");
+    printf("4 Listar Contatos\n");
     printf("%d Finaliza",EXIT);
     printf("\n: ");
     scanf("%d",&op);
@@ -107,53 +48,51 @@ int menu() {
 
 }
 
-// Função que inicializa a fila
-void inicializaFila(Fila *fila) {
 
-    // Faz os aponteiramentos para NULL
-    fila->primeiro = NULL;
-    fila->ultimo = NULL;
-    fila->cont = 0;
+// Função que inicializa a árvore binária de busca
+void initializeTree(Node **root) {
+
+    // Faz o aponteiramento para NULL
+    *root = NULL;
 
 }
 
+// Função que verifica se a árvore binária de busca está vazia
+int emptyTree(Node *root) {
+    
+    return (root == NULL);
+
+}
+
+Node *createNode(Node *aux){
+    
+    aux = malloc(sizeof(Node));
+
+    
+
+    return aux;
+}
+
 // Permite o cadastro de um contato
-void insContact(Fila *fila) {
-    Contact *aux;
-    
-    // Cria um novo elemento da lista encadeada (Fila)
-    aux = malloc(sizeof(Contact));
+Node *insContact(Node *root, char name[30], char email[40], char phone[15]) {
 
-    scanf("%*c");
-    // Recebe e armazena os dados no novo elemento
-    printf("Nome: \n");
-    fgets(aux->name, sizeof(aux->name), stdin);
-    aux->name[strcspn(aux->name, "\n")] = '\0';
-    
-    printf("Email: \n");
-    fgets(aux->email, sizeof(aux->email), stdin);
-    aux->email[strcspn(aux->email, "\n")] = '\0';
-
-    printf("Telefone: \n");
-    fgets(aux->phone, sizeof(aux->phone), stdin);
-    aux->phone[strcspn(aux->phone, "\n")] = '\0';
-
-    // Faz os aponteiramentos para NULL
-    aux->next = NULL;
-    aux->prev = NULL;
-    
-    // Insere o novo elemento no fim da lista encadeada (Fila)
-    if (fila->primeiro == NULL) { // Se a fila esta vazia
-        fila->primeiro = aux;
-        fila->ultimo = aux;
-        fila->cont++;
+    if(root==NULL){
+        root = malloc(sizeof(Node));
+        root->name = name;
+        root->email = email;
+        root->phone = phone;
+        root->left = NULL;
+        root->right = NULL;
+        return root;
     }
-    else { // Se a fila nao esta vazia
-        aux->prev = fila->ultimo;
-        fila->ultimo->next = aux;
-        fila->ultimo = aux;
-        fila->cont++;
+    else if(name[0] <= root->name[0]){
+        root->left = insContact(root->left, name, email, phone);
     }
+    else{
+        root->right = insContact(root->right, name, email, phone);
+    }
+    
+    return root;
 
 }
 
@@ -163,22 +102,14 @@ void delContact() {
 }
 
 // Lista o conteudo da agenda (todos os campos)
-void listContacts(Fila *fila) {
-    
+void listContacts(Node *root) {
 
-    Contact *aux;
-    aux = malloc(sizeof(Contact));
-
-    printf("Agenda:\n\n");
-
-    while (fila->primeiro != NULL) {
-        aux = fila->primeiro;
-        printf("\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n\n", aux->name, aux->email, aux->phone);
-        fila->primeiro = fila->primeiro->next;
+    if(root!=NULL){
+        printf("\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n\n", root->name, root->email, root->phone);
+        listContacts(root->left);
+        listContacts(root->right);
     }
-    printf("%d", fila->cont);
 
-    free(aux);
 }
 
 // Permite consultar um contato da agenda por nome
@@ -191,16 +122,33 @@ void queryContact() {
 int main() {
 
     int op=0;
-    Contact MContact;
-    Fila fila;
+    //Contact MContact;
+    Node *root, *aux;
+    char name[30];
+    char email[40];
+    char phone[15];
 
-    inicializaFila(&fila);
+
+    initializeTree(&root);
 
     while(op!=EXIT) {
         op = menu();
         switch(op) {
             case 1: 
-                insContact(&fila);
+                scanf("%*c");
+                printf("Nome: \n");
+                fgets(name, sizeof(name), stdin);
+                name[strcspn(name, "\n")] = '\0';
+
+                printf("Email: \n");
+                fgets(email, sizeof(email), stdin);
+                email[strcspn(email, "\n")] = '\0';
+
+                printf("Telefone: \n");
+                fgets(phone, sizeof(phone), stdin);
+                phone[strcspn(phone, "\n")] = '\0';
+                
+                root = insContact(root, name, email, phone);
                 break;
             case 2: 
                 delContact();
@@ -209,8 +157,7 @@ int main() {
                 queryContact();
                 break;
             case 4: 
-                quickSort(&fila, 0, fila.cont);
-                listContacts(&fila);
+                listContacts(root);
                 break;
         }
     }
