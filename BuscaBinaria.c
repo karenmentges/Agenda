@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-
 int buscaBinaria (int *vet, int inicio, int fim, int chave){
     int meio;
     

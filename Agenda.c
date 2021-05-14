@@ -14,16 +14,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #define EXIT 10  // valor fixo para a opção que finaliza a aplicação
-
 
 // Estrutura que contém os campos dos registros da agenda
 struct node {
     char name[30];
     char email[40];
     char phone[15];
-	struct node *left; // implemente como lista, como árvore BST, AVL...
+	struct node *left;
 	struct node *right;
 };
 
@@ -62,15 +60,6 @@ int emptyTree(Node *root) {
     
     return (root == NULL);
 
-}
-
-Node *createNode(Node *aux){
-    
-    aux = malloc(sizeof(Node));
-
-    
-
-    return aux;
 }
 
 // Permite o cadastro de um contato
