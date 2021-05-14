@@ -33,7 +33,61 @@ typedef struct MREC Contact;
 typedef struct {
     Contact *primeiro;
     Contact *ultimo;
+    int cont;
 } Fila;
+
+
+// Ordenar a fila 
+int particiona(Fila *fila, int inicio, int fim){
+    
+    Contact *A = fila->primeiro;
+    Contact aux;
+    int pivo = fim;
+    int k = inicio;
+
+    for(int i = inicio; i < fim; i++){
+        if(A[i].name[0] == A[pivo].name[0]){
+            if(A[i].name[1] == A[pivo].name[1]){
+                if(A[i].name[2] < A[pivo].name[2]){
+                    aux = A[i];
+                    A[i] = A[k];
+                    A[k] = aux;
+                    k++;
+            }
+            }
+            else if(A[i].name[1] < A[pivo].name[1]){
+                aux = A[i];
+                A[i] = A[k];
+                A[k] = aux;
+                k++;
+            }
+        }
+        else if(A[i].name[0] < A[pivo].name[0]){
+            aux = A[i];
+            A[i] = A[k];
+            A[k] = aux;
+            k++;
+        }
+    }
+    if(A[k].name[0] > A[pivo].name[0]){
+        aux = A[k];
+        A[k] = A[pivo];
+        A[pivo] = aux;
+    }
+
+    return k;
+
+}
+void quickSort(Fila *fila, int inicio, int fim){
+    int pivo = 0;
+
+    if(inicio < fim){
+        pivo = particiona(fila, inicio, fim);
+        quickSort(fila, inicio, pivo-1);
+        quickSort(fila, pivo+1, fim);
+    }
+
+}
 
 
 // Apresenta o menu da aplicação e retorna a opção selecionada
@@ -59,6 +113,7 @@ void inicializaFila(Fila *fila) {
     // Faz os aponteiramentos para NULL
     fila->primeiro = NULL;
     fila->ultimo = NULL;
+    fila->cont = 0;
 
 }
 
@@ -91,11 +146,13 @@ void insContact(Fila *fila) {
     if (fila->primeiro == NULL) { // Se a fila esta vazia
         fila->primeiro = aux;
         fila->ultimo = aux;
+        fila->cont++;
     }
     else { // Se a fila nao esta vazia
         aux->prev = fila->ultimo;
         fila->ultimo->next = aux;
         fila->ultimo = aux;
+        fila->cont++;
     }
 
 }
@@ -107,6 +164,8 @@ void delContact() {
 
 // Lista o conteudo da agenda (todos os campos)
 void listContacts(Fila *fila) {
+    
+
     Contact *aux;
     aux = malloc(sizeof(Contact));
 
@@ -117,6 +176,7 @@ void listContacts(Fila *fila) {
         printf("\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n\n", aux->name, aux->email, aux->phone);
         fila->primeiro = fila->primeiro->next;
     }
+    printf("%d", fila->cont);
 
     free(aux);
 }
@@ -149,11 +209,11 @@ int main() {
                 queryContact();
                 break;
             case 4: 
+                quickSort(&fila, 0, fila.cont);
                 listContacts(&fila);
                 break;
         }
     }
 
     return 0;
-
 }
