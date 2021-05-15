@@ -99,8 +99,24 @@ void listContacts(Node *root) {
 
 }
 
+Node *searchContact(Node *root, char *name) {
+    if (strcmp(root->name, name) == 0 || root == NULL){
+        return root;
+    }
+    if (strcmp(root->name, name) < 0) {
+        return searchContact(root->right, name);
+    }
+    return searchContact(root->left, name);
+}
+
 // Permite consultar um contato da agenda por nome
-void queryContact() {
+void queryContact(Node *root, char *name) {
+    Node *contact = searchContact(root, name);
+    if (contact == NULL) {
+        printf("\tContato não existe.\n");
+    } else {
+        printf("\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n\n", contact->name, contact->email, contact->phone);
+    }
     return;
 }
 
