@@ -28,6 +28,12 @@ struct node {
 // Tipo criado para instanciar variaveis do tipo agenda
 typedef struct node Node;
 
+typedef struct {
+    char name[30];
+    char email[40];
+    char phone[15];
+} Contatos;
+
 
 // Apresenta o menu da aplicação e retorna a opção selecionada
 int menu() {
@@ -68,7 +74,7 @@ Node *insContact(Node *root, Node *aux) {
     else if(strcmp(root->name, aux->name) > 0){
         root->left = insContact(root->left, aux);
     }
-    else{
+    else {
         root->right = insContact(root->right, aux);
     }
     
@@ -80,25 +86,86 @@ void delContact() {
     return;
 }
 
+int contaContatos(Node* root) {
+    if(root==NULL){
+        return 0;
+    }
+    return (1 + contaContatos(root->left) + contaContatos(root->right));
+}
+
+Contatos *copiaAgenda(Contatos *agenda, Node *root, int i) {
+    if(root!=NULL){
+        strcpy(agenda[i].name, root->name);
+        strcpy(agenda[i].email, root->email);
+        strcpy(agenda[i].phone, root->phone);
+        i++;
+        copiaAgenda(agenda, root->left, i);
+        copiaAgenda(agenda, root->right, i+1);
+    }
+}
+
+void intercala(Contatos A[], int inicio, int meio, int fim) {
+    Contatos *aux = malloc((fim-inicio+1)*sizeof(Contatos));
+    int i = inicio;
+    int j = meio+1;
+    int k = 0;
+    while (i <= meio && j <= fim) {
+        if (strcmp(A[i].name, A[j].name) <= 0) {
+            aux[k] = A[i];
+            i++;
+        }
+        else {
+            aux[k] = A[j];
+            j++;
+        }
+        k++;
+    }
+    while (i <= meio) {
+        aux[k] = A[i];
+        k++;
+        i++;
+    }
+    while (j <= fim) {
+        aux[k] = A[j];
+        k++;
+        j++;
+    }
+    for (k = inicio; k <= fim; k++) {
+        A[k] = aux[k-inicio];
+    }
+    free(aux);
+}
+
+void mergeSort(Contatos A[], int inicio, int fim) {
+    int meio;
+    if (inicio < fim) {
+        meio = (inicio + fim)/2;
+        mergeSort(A, inicio, meio);
+        mergeSort(A, meio + 1, fim);
+        intercala(A, inicio, meio, fim);
+    }
+}
+
 // Lista o conteudo da agenda (todos os campos)
 void listContacts(Node *root) {
-
-    if(root!=NULL){
-        printf("\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n\n", root->name, root->email, root->phone);
-        listContacts(root->left);
-        listContacts(root->right);
+    int n = contaContatos(root);
+    Contatos agenda[n];
+    copiaAgenda(agenda, root, 0);
+    mergeSort(agenda, 0, (n-1));
+    for (int i = 0; i < n; i++) {
+        printf("\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n\n", agenda[i].name, agenda[i].email, agenda[i].phone);
     }
-
+    
 }
 
 Node *searchContact(Node *root, char *name) {
     if (strcmp(root->name, name) == 0 || root == NULL){
         return root;
     }
-    if (strcmp(root->name, name) < 0) {
-        return searchContact(root->right, name);
+    if (strcmp(root->name, name) > 0) {
+        return searchContact(root->left, name);
     }
-    return searchContact(root->left, name);
+    return searchContact(root->right, name);
 }
 
 // Permite consultar um contato da agenda por nome
@@ -154,7 +221,7 @@ int main() {
                 queryContact(root, name);
                 break;
             case 4: 
-                listContacts(root);
+                listContacts(root);        
                 break;
         }
     }
