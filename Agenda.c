@@ -17,16 +17,16 @@
 #define EXIT 10  // valor fixo para a opção que finaliza a aplicação
 
 // Estrutura que contém os campos dos registros da agenda
-struct node {
+struct MREC {
     char name[30];
     char email[40];
     char phone[15];
-	struct node *left;
-	struct node *right;
+	struct MREC *next;
+	struct MREC *prev;
 };
 
 // Tipo criado para instanciar variaveis do tipo agenda
-typedef struct node Node;
+typedef struct MREC Contact;
 
 typedef struct {
     char name[30];
@@ -52,92 +52,92 @@ int menu() {
 }
 
 // Função que inicializa a árvore binária de busca
-void initializeTree(Node **root) {
+void initializeTree(Contact **root) {
     // Faz o aponteiramento para NULL
     *root = NULL;
 }
 
 // Função que verifica se a árvore binária de busca está vazia
-int emptyTree(Node *root) {
+int emptyTree(Contact *root) {
     return (root == NULL);
 }
 
 // Permite o cadastro de um contato
-Node *insContact(Node *root, Node *aux) {
+Contact *insContact(Contact *root, Contact *aux) {
     if(root==NULL){
-        root = malloc(sizeof(Node));
+        root = malloc(sizeof(Contact));
         root = aux;
-        root->left = NULL;
-        root->right = NULL;
+        root->prev = NULL;
+        root->next = NULL;
         return root;
     }
     else if(strcmp(root->name, aux->name) > 0){
-        root->left = insContact(root->left, aux);
+        root->prev = insContact(root->prev, aux);
     }
     else {
-        root->right = insContact(root->right, aux);
+        root->next = insContact(root->next, aux);
     }
     
     return root;
 }
 
-Node *menorNo(Node *node) {
-    Node *aux = node;
-    while (aux && aux->left != NULL) {
-        aux = aux->left;
+Contact *menorNo(Contact *node) {
+    Contact *aux = node;
+    while (aux && aux->prev != NULL) {
+        aux = aux->prev;
     }
     return aux;
 }
 
-Node *delContact(Node *root, char *name) {
+Contact *delContact(Contact *root, char *name) {
     if (root==NULL) {
         return root;
     }
     // se name > root.name
     if (strcmp(name, root->name) < 0 ) {
-        root->left = delContact(root->left,name);
+        root->prev = delContact(root->prev,name);
     }
     // se name < root.name
     else if (strcmp(name, root->name) > 0) {
-        root->right = delContact(root->right, name);
+        root->next = delContact(root->next, name);
     }
     // se name == root
     else {
         // se tiver só um filho ou nenhum filho
-        if (root->left==NULL) {
-            Node *aux = root->right;
+        if (root->prev==NULL) {
+            Contact *aux = root->next;
             free(root);
             return aux;
         }
-        else if (root->left==NULL) {
-            Node *aux = root->left;
+        else if (root->next==NULL) {
+            Contact *aux = root->prev;
             free(root);
             return aux;
         }
-        Node *aux = menorNo(root->right);
+        Contact *aux = menorNo(root->next);
         strcpy(root->name, aux->name);
         strcpy(root->email, aux->email);
         strcpy(root->phone, aux->phone);
-        root->right = delContact(root->right, aux->name);
+        root->next = delContact(root->next, aux->name);
     }
     return root;
 }
 
-int contaContatos(Node* root) {
+int contaContatos(Contact* root) {
     if(root==NULL){
         return 0;
     }
-    return (1 + contaContatos(root->left) + contaContatos(root->right));
+    return (1 + contaContatos(root->prev) + contaContatos(root->next));
 }
 
-Contatos *copiaAgenda(Contatos *agenda, Node *root, int i) {
+void copiaAgenda(Contatos *agenda, Contact *root, int i) {
     if(root!=NULL){
         strcpy(agenda[i].name, root->name);
         strcpy(agenda[i].email, root->email);
         strcpy(agenda[i].phone, root->phone);
         i++;
-        copiaAgenda(agenda, root->left, i);
-        copiaAgenda(agenda, root->right, i+contaContatos(root->left));
+        copiaAgenda(agenda, root->prev, i);
+        copiaAgenda(agenda, root->next, i+contaContatos(root->prev));
     }
 }
 
@@ -184,7 +184,7 @@ void mergeSort(Contatos A[], int inicio, int fim) {
 }
 
 // Lista o conteudo da agenda (todos os campos)
-void listContacts(Node *root) {
+void listContacts(Contact *root) {
     int n = contaContatos(root);
     Contatos agenda[n];
     copiaAgenda(agenda, root, 0);
@@ -199,7 +199,7 @@ void listContacts(Node *root) {
     }    
 }
 
-Node *searchContact(Node *root, char *name) {
+Contact *searchContact(Contact *root, char *name) {
     if(root == NULL){
         return NULL;
     }
@@ -207,16 +207,16 @@ Node *searchContact(Node *root, char *name) {
         return root;
     }
     if (strcmp(root->name, name) > 0) {
-        return searchContact(root->left, name);
+        return searchContact(root->prev, name);
     }
     else {
-        return searchContact(root->right, name);
+        return searchContact(root->next, name);
     }
 }
 
 // Permite consultar um contato da agenda por nome
-void queryContact(Node *root, char *name) {
-    Node *contact = searchContact(root, name);
+void queryContact(Contact *root, char *name) {
+    Contact *contact = searchContact(root, name);
     if (contact == NULL) {
         printf("\n\tContato não existe.\n");
     } else {
@@ -231,7 +231,7 @@ int main() {
 
     int op=0;
     //Contact MContact;
-    Node *root, *aux;
+    Contact *root, *aux;
     char name[40];    
 
     initializeTree(&root);
@@ -240,7 +240,7 @@ int main() {
         op = menu();
         switch(op) {
             case 1: 
-                aux = malloc(sizeof(Node));
+                aux = malloc(sizeof(Contact));
                 scanf("%*c");
                 printf("\nNome: ");
                 fgets(aux->name, sizeof(aux->name), stdin);
@@ -261,7 +261,12 @@ int main() {
                 printf("\nNome: ");
                 fgets(name, sizeof(name), stdin);
                 name[strcspn(name, "\n")] = '\0';
-                root = delContact(root, name);
+                if(searchContact(root, name)==NULL){
+                    printf("\n\tContato não existe.\n");
+                }
+                else{
+                    root = delContact(root, name);
+                }
                 break;
             case 3: 
                 scanf("%*c");
