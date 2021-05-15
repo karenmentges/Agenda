@@ -111,10 +111,7 @@ int main() {
     int op=0;
     //Contact MContact;
     Node *root, *aux;
-    char name[30];
-    char email[40];
-    char phone[15];
-
+    
 
     initializeTree(&root);
 
@@ -122,6 +119,7 @@ int main() {
         op = menu();
         switch(op) {
             case 1: 
+                aux = malloc(sizeof(Node));
                 scanf("%*c");
                 printf("Nome: \n");
                 fgets(aux->name, sizeof(aux->name), stdin);
