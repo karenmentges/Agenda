@@ -81,9 +81,46 @@ Node *insContact(Node *root, Node *aux) {
     return root;
 }
 
-// Permite excluir um contato da agenda
-void delContact() {
-    return;
+Node *menorNo(Node *node) {
+    Node *aux = node;
+    while (aux && aux->left != NULL) {
+        aux = aux->left;
+    }
+    return aux;
+}
+
+Node *delContact(Node *root, char *name) {
+    if (root==NULL) {
+        return root;
+    }
+    // se name > root.name
+    if (strcmp(name, root->name) < 0 ) {
+        root->left = delContact(root->left,name);
+    }
+    // se name < root.name
+    else if (strcmp(name, root->name) > 0) {
+        root->right = delContact(root->right, name);
+    }
+    // se name == root
+    else {
+        // se tiver só um filho ou nenhum filho
+        if (root->left==NULL) {
+            Node *aux = root->right;
+            free(root);
+            return aux;
+        }
+        else if (root->left==NULL) {
+            Node *aux = root->left;
+            free(root);
+            return aux;
+        }
+        Node *aux = menorNo(root->right);
+        strcpy(root->name, aux->name);
+        strcpy(root->email, aux->email);
+        strcpy(root->phone, aux->phone);
+        root->right = delContact(root->right, aux->name);
+    }
+    return root;
 }
 
 int contaContatos(Node* root) {
@@ -100,7 +137,7 @@ Contatos *copiaAgenda(Contatos *agenda, Node *root, int i) {
         strcpy(agenda[i].phone, root->phone);
         i++;
         copiaAgenda(agenda, root->left, i);
-        copiaAgenda(agenda, root->right, i+1);
+        copiaAgenda(agenda, root->right, i+contaContatos(root->left));
     }
 }
 
@@ -165,7 +202,9 @@ Node *searchContact(Node *root, char *name) {
     if (strcmp(root->name, name) > 0) {
         return searchContact(root->left, name);
     }
-    return searchContact(root->right, name);
+    else {
+        return searchContact(root->right, name);
+    }
 }
 
 // Permite consultar um contato da agenda por nome
@@ -210,8 +249,12 @@ int main() {
                 
                 root = insContact(root, aux);
                 break;
-            case 2: 
-                delContact();
+            case 2:
+                scanf("%*c");
+                printf("Nome: \n");
+                fgets(name, sizeof(name), stdin);
+                name[strcspn(name, "\n")] = '\0';
+                root = delContact(root, name);
                 break;
             case 3: 
                 scanf("%*c");
