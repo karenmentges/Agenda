@@ -63,22 +63,20 @@ int emptyTree(Node *root) {
 }
 
 // Permite o cadastro de um contato
-Node *insContact(Node *root, char name[30], char email[40], char phone[15]) {
+Node *insContact(Node *root, Node *aux) {
 
     if(root==NULL){
         root = malloc(sizeof(Node));
-        root->name = name;
-        root->email = email;
-        root->phone = phone;
+        root = aux;
         root->left = NULL;
         root->right = NULL;
         return root;
     }
-    else if(name[0] <= root->name[0]){
-        root->left = insContact(root->left, name, email, phone);
+    else if(aux->name[0] <= root->name[0]){
+        root->left = insContact(root->left, aux);
     }
     else{
-        root->right = insContact(root->right, name, email, phone);
+        root->right = insContact(root->right, aux);
     }
     
     return root;
@@ -126,18 +124,18 @@ int main() {
             case 1: 
                 scanf("%*c");
                 printf("Nome: \n");
-                fgets(name, sizeof(name), stdin);
-                name[strcspn(name, "\n")] = '\0';
+                fgets(aux->name, sizeof(aux->name), stdin);
+                aux->name[strcspn(aux->name, "\n")] = '\0';
 
                 printf("Email: \n");
-                fgets(email, sizeof(email), stdin);
-                email[strcspn(email, "\n")] = '\0';
+                fgets(aux->email, sizeof(aux->email), stdin);
+                aux->email[strcspn(aux->email, "\n")] = '\0';
 
                 printf("Telefone: \n");
-                fgets(phone, sizeof(phone), stdin);
-                phone[strcspn(phone, "\n")] = '\0';
+                fgets(aux->phone, sizeof(aux->phone), stdin);
+                aux->phone[strcspn(aux->phone, "\n")] = '\0';
                 
-                root = insContact(root, name, email, phone);
+                root = insContact(root, aux);
                 break;
             case 2: 
                 delContact();
