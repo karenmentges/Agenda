@@ -189,14 +189,21 @@ void listContacts(Node *root) {
     Contatos agenda[n];
     copiaAgenda(agenda, root, 0);
     mergeSort(agenda, 0, (n-1));
-    for (int i = 0; i < n; i++) {
-        printf("\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n\n", agenda[i].name, agenda[i].email, agenda[i].phone);
+    if(n == 0){
+        printf("\n\tAgenda está vazia.\n");
     }
-    
+    else{
+        for (int i = 0; i < n; i++) {
+            printf("\n\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n", agenda[i].name, agenda[i].email, agenda[i].phone);
+        }
+    }    
 }
 
 Node *searchContact(Node *root, char *name) {
-    if (strcmp(root->name, name) == 0 || root == NULL){
+    if(root == NULL){
+        return NULL;
+    }
+    else if (strcmp(root->name, name) == 0){
         return root;
     }
     if (strcmp(root->name, name) > 0) {
@@ -211,9 +218,9 @@ Node *searchContact(Node *root, char *name) {
 void queryContact(Node *root, char *name) {
     Node *contact = searchContact(root, name);
     if (contact == NULL) {
-        printf("\tContato não existe.\n");
+        printf("\n\tContato não existe.\n");
     } else {
-        printf("\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n\n", contact->name, contact->email, contact->phone);
+        printf("\n\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n\n", contact->name, contact->email, contact->phone);
     }
     return;
 }
@@ -235,15 +242,15 @@ int main() {
             case 1: 
                 aux = malloc(sizeof(Node));
                 scanf("%*c");
-                printf("Nome: \n");
+                printf("\nNome: ");
                 fgets(aux->name, sizeof(aux->name), stdin);
                 aux->name[strcspn(aux->name, "\n")] = '\0';
 
-                printf("Email: \n");
+                printf("Email: ");
                 fgets(aux->email, sizeof(aux->email), stdin);
                 aux->email[strcspn(aux->email, "\n")] = '\0';
 
-                printf("Telefone: \n");
+                printf("Telefone: ");
                 fgets(aux->phone, sizeof(aux->phone), stdin);
                 aux->phone[strcspn(aux->phone, "\n")] = '\0';
                 
@@ -251,14 +258,14 @@ int main() {
                 break;
             case 2:
                 scanf("%*c");
-                printf("Nome: \n");
+                printf("\nNome: ");
                 fgets(name, sizeof(name), stdin);
                 name[strcspn(name, "\n")] = '\0';
                 root = delContact(root, name);
                 break;
             case 3: 
                 scanf("%*c");
-                printf("Nome: \n");
+                printf("\nNome: ");
                 fgets(name, sizeof(name), stdin);
                 name[strcspn(name, "\n")] = '\0';
                 queryContact(root, name);
