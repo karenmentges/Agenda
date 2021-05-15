@@ -31,40 +31,33 @@ typedef struct node Node;
 
 // Apresenta o menu da aplicação e retorna a opção selecionada
 int menu() {
-
     int op=0;
 
-    printf("1 Inserir Contato\n");
+    printf("\nMenu\n");
+    printf("\n1 Inserir Contato\n");
     printf("2 Deletar Contato\n");
     printf("3 Consultar um Contato\n");
     printf("4 Listar Contatos\n");
-    printf("%d Finaliza",EXIT);
-    printf("\n: ");
+    printf("\n%d Finaliza\n",EXIT);
+    printf("\n");
     scanf("%d",&op);
-    
+
     return op;
-
 }
-
 
 // Função que inicializa a árvore binária de busca
 void initializeTree(Node **root) {
-
     // Faz o aponteiramento para NULL
     *root = NULL;
-
 }
 
 // Função que verifica se a árvore binária de busca está vazia
 int emptyTree(Node *root) {
-    
     return (root == NULL);
-
 }
 
 // Permite o cadastro de um contato
 Node *insContact(Node *root, Node *aux) {
-
     if(root==NULL){
         root = malloc(sizeof(Node));
         root = aux;
@@ -72,7 +65,7 @@ Node *insContact(Node *root, Node *aux) {
         root->right = NULL;
         return root;
     }
-    else if(aux->name[0] <= root->name[0]){
+    else if(strcmp(root->name, aux->name) > 0){
         root->left = insContact(root->left, aux);
     }
     else{
@@ -80,7 +73,6 @@ Node *insContact(Node *root, Node *aux) {
     }
     
     return root;
-
 }
 
 // Permite excluir um contato da agenda
@@ -127,7 +119,7 @@ int main() {
     int op=0;
     //Contact MContact;
     Node *root, *aux;
-    
+    char name[40];    
 
     initializeTree(&root);
 
@@ -155,7 +147,11 @@ int main() {
                 delContact();
                 break;
             case 3: 
-                queryContact();
+                scanf("%*c");
+                printf("Nome: \n");
+                fgets(name, sizeof(name), stdin);
+                name[strcspn(name, "\n")] = '\0';
+                queryContact(root, name);
                 break;
             case 4: 
                 listContacts(root);
