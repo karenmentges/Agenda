@@ -269,13 +269,12 @@ void writeArq(Contact *root){
 int main() {
 
     int op=0;
-    //Contact MContact;
-    Contact *root, *aux;
+    Contact *MContact, *aux;
     char name[40];    
 
-    initializeTree(&root);
+    initializeTree(&MContact);
 
-    root = readArq(root);
+    MContact = readArq(MContact);
 
     while(op!=EXIT) {
         op = menu();
@@ -295,18 +294,18 @@ int main() {
                 fgets(aux->phone, sizeof(aux->phone), stdin);
                 aux->phone[strcspn(aux->phone, "\n")] = '\0';
                 
-                root = insContact(root, aux);
+                MContact = insContact(MContact, aux);
                 break;
             case 2:
                 scanf("%*c");
                 printf("\nNome: ");
                 fgets(name, sizeof(name), stdin);
                 name[strcspn(name, "\n")] = '\0';
-                if(searchContact(root, name)==NULL){
+                if(searchContact(MContact, name)==NULL){
                     printf("\n\tContato não existe.\n");
                 }
                 else{
-                    root = delContact(root, name);
+                    MContact = delContact(MContact, name);
                 }
                 break;
             case 3: 
@@ -314,15 +313,15 @@ int main() {
                 printf("\nNome: ");
                 fgets(name, sizeof(name), stdin);
                 name[strcspn(name, "\n")] = '\0';
-                queryContact(root, name);
+                queryContact(MContact, name);
                 break;
             case 4: 
-                listContacts(root);        
+                listContacts(MContact);        
                 break;
         }
     }
 
-    writeArq(root);
+    writeArq(MContact);
 
     return 0;
 }
