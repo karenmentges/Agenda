@@ -1,15 +1,3 @@
-/*
- Este é um esqueleto que deve ser utilzado como base para implementação da Agenda.
-	- As funções não tem os parâmetros definidos e os parâmetros caso necessários, devem ser incluídos.
-    - Caso seja necessário novas funções podem ser incluídas
- 	- Devem ser respeitados os nomes dados para o métodos e estruturas, porém novas estruturas e funções podem ser criados, caso julgue necessário
-	- Faça os includes necessários
-	- A organização das funções fica a critério do programador
-	- Códigos não identados sofrerão duras penalidades
-	- Não serão toleradas variaveis globais
-	- Caso seja detectado plágio, os grupos envolvidos receberão nota 0.
-*/
-
 #include <stdio.h> 
 #include <stdlib.h>
 #include <string.h>
@@ -35,7 +23,7 @@ typedef struct {
 } Contatos;
 
 
-// Apresenta o menu da aplicação e retorna a opção selecionada
+// Função que apresenta o menu da aplicação e retorna a opção selecionada
 int menu() {
     int op=0;
 
@@ -62,7 +50,7 @@ int emptyTree(Contact *root) {
     return (root == NULL);
 }
 
-// Permite o cadastro de um contato
+// Função que permite o cadastro de um contato
 Contact *insContact(Contact *root, Contact *aux) {
     if(root==NULL){
         root = malloc(sizeof(Contact));
@@ -76,11 +64,11 @@ Contact *insContact(Contact *root, Contact *aux) {
     }
     else {
         root->next = insContact(root->next, aux);
-    }
-    
+    }    
     return root;
 }
 
+// Função que retorna o menor nó da árvore
 Contact *menorNo(Contact *node) {
     Contact *aux = node;
     while (aux && aux->prev != NULL) {
@@ -89,6 +77,7 @@ Contact *menorNo(Contact *node) {
     return aux;
 }
 
+// Função que permite deletar um contato
 Contact *delContact(Contact *root, char *name) {
     if (root==NULL) {
         return root;
@@ -123,6 +112,7 @@ Contact *delContact(Contact *root, char *name) {
     return root;
 }
 
+// Função que conta quantos contatos tem na árvore
 int contaContatos(Contact* root) {
     if(root==NULL){
         return 0;
@@ -130,6 +120,7 @@ int contaContatos(Contact* root) {
     return (1 + contaContatos(root->prev) + contaContatos(root->next));
 }
 
+// Função que copia os contatos da árvore para um vetor de contatos
 void copiaAgenda(Contatos *agenda, Contact *root, int i) {
     if(root!=NULL){
         strcpy(agenda[i].name, root->name);
@@ -141,6 +132,7 @@ void copiaAgenda(Contatos *agenda, Contact *root, int i) {
     }
 }
 
+// Função de ordenação dos contatos
 void intercala(Contatos A[], int inicio, int meio, int fim) {
     Contatos *aux = malloc((fim-inicio+1)*sizeof(Contatos));
     int i = inicio;
@@ -172,7 +164,6 @@ void intercala(Contatos A[], int inicio, int meio, int fim) {
     }
     free(aux);
 }
-
 void mergeSort(Contatos A[], int inicio, int fim) {
     int meio;
     if (inicio < fim) {
@@ -183,7 +174,7 @@ void mergeSort(Contatos A[], int inicio, int fim) {
     }
 }
 
-// Lista o conteudo da agenda (todos os campos)
+// Função que lista o conteudo da agenda (todos os campos)
 void listContacts(Contact *root) {
     int n = contaContatos(root);
     Contatos agenda[n];
@@ -196,9 +187,10 @@ void listContacts(Contact *root) {
         for (int i = 0; i < n; i++) {
             printf("\n\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n", agenda[i].name, agenda[i].email, agenda[i].phone);
         }
-    }    
+    }   
 }
 
+// Função que busca um contato da agenda por nome
 Contact *searchContact(Contact *root, char *name) {
     if(root == NULL){
         return NULL;
@@ -214,7 +206,7 @@ Contact *searchContact(Contact *root, char *name) {
     }
 }
 
-// Permite consultar um contato da agenda por nome
+// Função que permite consultar um contato da agenda por nome
 void queryContact(Contact *root, char *name) {
     Contact *contact = searchContact(root, name);
     if (contact == NULL) {
@@ -225,6 +217,7 @@ void queryContact(Contact *root, char *name) {
     return;
 }
 
+// Função que lê o arquivo Agenda.txt e adiciona o conteúdo na árvore
 Contact *readArq(Contact *root){
     Contact *aux;
     FILE *arq = fopen("Agenda.txt", "r");
@@ -244,6 +237,7 @@ Contact *readArq(Contact *root){
     return root;
 }
 
+// Função que escreve o conteúdo da árvore no arquivo Agenda.txt
 void writeArq(Contact *root){
     int n = contaContatos(root);
     Contatos agenda[n];
@@ -262,13 +256,14 @@ void writeArq(Contact *root){
         fprintf(arq, "%s\n", agenda[i].phone);
     } 
     fclose(arq);
+    return;
 }
 
 
 // Programa principal
 int main() {
 
-    int op=0;
+    int op = 0;
     Contact *MContact, *aux;
     char name[40];    
 
