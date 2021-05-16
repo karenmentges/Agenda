@@ -225,6 +225,45 @@ void queryContact(Contact *root, char *name) {
     return;
 }
 
+Contact *readArq(Contact *root){
+    Contact *aux;
+    FILE *arq = fopen("Agenda.txt", "r");
+    if(arq == NULL){
+        FILE *arq = fopen("Agenda.txt", "w");
+        return root;
+    }
+    fseek(arq, 0, SEEK_SET);
+    while(!feof(arq)){
+        aux = malloc(sizeof(Contact));
+        fscanf(arq, "%s\n", aux->name);
+        fscanf(arq, "%s\n", aux->email);
+        fscanf(arq, "%s\n", aux->phone);
+        root = insContact(root, aux);
+    }
+    fclose(arq);
+    return root;
+}
+
+void writeArq(Contact *root){
+    int n = contaContatos(root);
+    Contatos agenda[n];
+    copiaAgenda(agenda, root, 0);
+    mergeSort(agenda, 0, (n-1));
+
+    FILE *arq = fopen("Agenda.txt", "w+");
+    fseek(arq, 0, SEEK_SET);
+    if(arq == NULL){
+        printf("Não foi possível acessar o arquivo!");
+        exit(1);
+    }
+    for (int i = 0; i < n; i++) {
+        fprintf(arq, "%s\n", agenda[i].name);
+        fprintf(arq, "%s\n", agenda[i].email);
+        fprintf(arq, "%s\n", agenda[i].phone);
+    } 
+    fclose(arq);
+}
+
 
 // Programa principal
 int main() {
@@ -235,6 +274,8 @@ int main() {
     char name[40];    
 
     initializeTree(&root);
+
+    root = readArq(root);
 
     while(op!=EXIT) {
         op = menu();
@@ -280,6 +321,8 @@ int main() {
                 break;
         }
     }
+
+    writeArq(root);
 
     return 0;
 }
