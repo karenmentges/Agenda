@@ -110,6 +110,7 @@ Contact *delContact(Contact *root, char *name) {
             free(root);
             return aux;
         }
+        // se tiver dois, procura o menor na subarvore da direita, copia dados e o deleta
         Contact *aux = menorNo(root->right);
         strcpy(root->name, aux->name);
         strcpy(root->email, aux->email);
