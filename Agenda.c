@@ -1,3 +1,10 @@
+/* 
+*   Pesquisa e ordenação de dados
+*   Trabalho Final
+*   Acadêmicas: Karen Ruver Mentges (matrícula: )
+*               Izabela Fusieger (matrícula: 1921101019)
+*/
+
 #include <stdio.h> 
 #include <stdlib.h>
 #include <string.h>
