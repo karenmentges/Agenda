@@ -169,11 +169,11 @@ Contact *readArq(Contact *root){
         aux = malloc(sizeof(Contact));
         fgets(aux->name, 30, arq);
         aux->name[strcspn(aux->name, "\n")] = '\0';
-        fgets(aux->email, 40, arq);
-        aux->email[strcspn(aux->email, "\n")] = '\0';
-        fgets(aux->phone, 15, arq);
-        aux->phone[strcspn(aux->phone, "\n")] = '\0';
         if (strlen(aux->name)>0) { // para não adicionar linhas em branco
+            fgets(aux->email, 40, arq);
+            aux->email[strcspn(aux->email, "\n")] = '\0';
+            fgets(aux->phone, 15, arq);
+            aux->phone[strcspn(aux->phone, "\n")] = '\0';
             root = insContact(root, aux);
         }
     }
