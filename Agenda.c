@@ -282,18 +282,18 @@ int main() {
     while(op!=EXIT) {
         op = menu();
         switch(op) {
-            case 1: 
+            case 1:
                 aux = malloc(sizeof(Contact));
                 scanf("%*c");
-                printf("\nNome: ");
+                printf("\nInforme o nome do contato que deseja inserir: ");
                 fgets(aux->name, sizeof(aux->name), stdin);
                 aux->name[strcspn(aux->name, "\n")] = '\0';
 
-                printf("Email: ");
+                printf("Informe email do contato: ");
                 fgets(aux->email, sizeof(aux->email), stdin);
                 aux->email[strcspn(aux->email, "\n")] = '\0';
 
-                printf("Telefone: ");
+                printf("Informe seu telefone do contato: ");
                 fgets(aux->phone, sizeof(aux->phone), stdin);
                 aux->phone[strcspn(aux->phone, "\n")] = '\0';
                 
@@ -301,7 +301,7 @@ int main() {
                 break;
             case 2:
                 scanf("%*c");
-                printf("\nNome: ");
+                printf("\nInforme o nome do contato a ser deletado: ");
                 fgets(name, sizeof(name), stdin);
                 name[strcspn(name, "\n")] = '\0';
                 if(searchContact(MContact, name)==NULL){
@@ -311,14 +311,15 @@ int main() {
                     MContact = delContact(MContact, name);
                 }
                 break;
-            case 3: 
+            case 3:
                 scanf("%*c");
-                printf("\nNome: ");
+                printf("\nInforme o nome do contato que deseja consultar: ");
                 fgets(name, sizeof(name), stdin);
                 name[strcspn(name, "\n")] = '\0';
                 queryContact(MContact, name);
                 break;
-            case 4: 
+            case 4:
+                printf("\nLista de Contatos\n");
                 listContacts(MContact);        
                 break;
         }
