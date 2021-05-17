@@ -120,82 +120,13 @@ Contact *delContact(Contact *root, char *name) {
     return root;
 }
 
-// Função que conta quantos contatos tem na árvore
-int contaContatos(Contact* root) {
-    if(root==NULL){
-        return 0;
-    }
-    return (1 + contaContatos(root->left) + contaContatos(root->right));
-}
-
-// Função que copia os contatos da árvore para um vetor de contatos
-void copiaAgenda(Contatos *agenda, Contact *root, int i) {
-    if(root!=NULL){
-        strcpy(agenda[i].name, root->name);
-        strcpy(agenda[i].email, root->email);
-        strcpy(agenda[i].phone, root->phone);
-        i++;
-        copiaAgenda(agenda, root->left, i);
-        copiaAgenda(agenda, root->right, i+contaContatos(root->left));
-    }
-}
-
-// Função de ordenação dos contatos
-void intercala(Contatos A[], int inicio, int meio, int fim) {
-    Contatos *aux = malloc((fim-inicio+1)*sizeof(Contatos));
-    int i = inicio;
-    int j = meio+1;
-    int k = 0;
-    while (i <= meio && j <= fim) {
-        if (strcmp(A[i].name, A[j].name) <= 0) {
-            aux[k] = A[i];
-            i++;
-        }
-        else {
-            aux[k] = A[j];
-            j++;
-        }
-        k++;
-    }
-    while (i <= meio) {
-        aux[k] = A[i];
-        k++;
-        i++;
-    }
-    while (j <= fim) {
-        aux[k] = A[j];
-        k++;
-        j++;
-    }
-    for (k = inicio; k <= fim; k++) {
-        A[k] = aux[k-inicio];
-    }
-    free(aux);
-}
-void mergeSort(Contatos A[], int inicio, int fim) {
-    int meio;
-    if (inicio < fim) {
-        meio = (inicio + fim)/2;
-        mergeSort(A, inicio, meio);
-        mergeSort(A, meio + 1, fim);
-        intercala(A, inicio, meio, fim);
-    }
-}
-
 // Função que lista o conteudo da agenda (todos os campos)
 void listContacts(Contact *root) {
-    int n = contaContatos(root);
-    Contatos agenda[n];
-    copiaAgenda(agenda, root, 0);
-    mergeSort(agenda, 0, (n-1));
-    if(n == 0){
-        printf("\n\tAgenda está vazia.\n");
+    if (root!=NULL) {
+        listContacts(root->left);
+        printf("\n\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n", root->name, root->email, root->phone);
+        listContacts(root->right);
     }
-    else{
-        for (int i = 0; i < n; i++) {
-            printf("\n\tNome: %s\n\tE-mail: %s\n\tTelefone: %s\n", agenda[i].name, agenda[i].email, agenda[i].phone);
-        }
-    }   
 }
 
 // Função que busca um contato da agenda por nome
@@ -238,31 +169,38 @@ Contact *readArq(Contact *root){
         aux = malloc(sizeof(Contact));
         fgets(aux->name, 30, arq);
         aux->name[strcspn(aux->name, "\n")] = '\0';
-        fscanf(arq, "%s\n", aux->email);
-        fscanf(arq, "%s\n", aux->phone);
-        root = insContact(root, aux);
+        fgets(aux->email, 40, arq);
+        aux->email[strcspn(aux->email, "\n")] = '\0';
+        fgets(aux->phone, 15, arq);
+        aux->phone[strcspn(aux->phone, "\n")] = '\0';
+        if (strlen(aux->name)>0) { // para não adicionar linhas em branco
+            root = insContact(root, aux);
+        }
     }
     fclose(arq);
     return root;
 }
 
+// Função para gravar contatos no arquivo
+void writeContact(Contact *root, FILE *arq) {
+    if (root!=NULL) {
+        fprintf(arq, "%s\n", root->name);
+        fprintf(arq, "%s\n", root->email);
+        fprintf(arq, "%s\n", root->phone);
+        writeContact(root->left, arq);
+        writeContact(root->right, arq);
+    }
+}
+
 // Função que escreve o conteúdo da árvore no arquivo Agenda.txt
 void writeArq(Contact *root){
-    int n = contaContatos(root);
-    Contatos agenda[n];
-    copiaAgenda(agenda, root, 0);
-
     FILE *arq = fopen("Agenda.txt", "w+");
     fseek(arq, 0, SEEK_SET);
     if(arq == NULL){
         printf("Não foi possível acessar o arquivo!");
         exit(1);
     }
-    for (int i = 0; i < n; i++) {
-        fprintf(arq, "%s\n", agenda[i].name);
-        fprintf(arq, "%s\n", agenda[i].email);
-        fprintf(arq, "%s\n", agenda[i].phone);
-    } 
+    writeContact(root, arq);
     fclose(arq);
     return;
 }
@@ -320,7 +258,11 @@ int main() {
                 break;
             case 4:
                 printf("\nLista de Contatos\n");
-                listContacts(MContact);        
+                if (emptyTree(MContact)==1) {
+                    printf("\nAgenda Vazia.\n");
+                } else {
+                    listContacts(MContact);
+                }
                 break;
         }
     }
