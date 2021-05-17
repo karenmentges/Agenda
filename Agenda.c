@@ -9,8 +9,8 @@ struct MREC {
     char name[30];
     char email[40];
     char phone[15];
-	struct MREC *next;
-	struct MREC *prev;
+	struct MREC *right;
+	struct MREC *left;
 };
 
 // Tipo criado para instanciar variaveis do tipo agenda
@@ -55,24 +55,24 @@ Contact *insContact(Contact *root, Contact *aux) {
     if(root==NULL){
         root = malloc(sizeof(Contact));
         root = aux;
-        root->prev = NULL;
-        root->next = NULL;
+        root->left = NULL;
+        root->right = NULL;
         return root;
     }
     else if(strcmp(root->name, aux->name) > 0){
-        root->prev = insContact(root->prev, aux);
+        root->left = insContact(root->left, aux);
     }
     else {
-        root->next = insContact(root->next, aux);
-    }    
+        root->right = insContact(root->right, aux);
+    }
     return root;
 }
 
 // Função que retorna o menor nó da árvore
 Contact *menorNo(Contact *node) {
     Contact *aux = node;
-    while (aux && aux->prev != NULL) {
-        aux = aux->prev;
+    while (aux && aux->left != NULL) {
+        aux = aux->left;
     }
     return aux;
 }
@@ -84,30 +84,30 @@ Contact *delContact(Contact *root, char *name) {
     }
     // se name > root.name
     if (strcmp(name, root->name) < 0 ) {
-        root->prev = delContact(root->prev,name);
+        root->left = delContact(root->left,name);
     }
     // se name < root.name
     else if (strcmp(name, root->name) > 0) {
-        root->next = delContact(root->next, name);
+        root->right = delContact(root->right, name);
     }
     // se name == root
     else {
         // se tiver só um filho ou nenhum filho
-        if (root->prev==NULL) {
-            Contact *aux = root->next;
+        if (root->left==NULL) {
+            Contact *aux = root->right;
             free(root);
             return aux;
         }
-        else if (root->next==NULL) {
-            Contact *aux = root->prev;
+        else if (root->right==NULL) {
+            Contact *aux = root->left;
             free(root);
             return aux;
         }
-        Contact *aux = menorNo(root->next);
+        Contact *aux = menorNo(root->right);
         strcpy(root->name, aux->name);
         strcpy(root->email, aux->email);
         strcpy(root->phone, aux->phone);
-        root->next = delContact(root->next, aux->name);
+        root->right = delContact(root->right, aux->name);
     }
     return root;
 }
@@ -117,7 +117,7 @@ int contaContatos(Contact* root) {
     if(root==NULL){
         return 0;
     }
-    return (1 + contaContatos(root->prev) + contaContatos(root->next));
+    return (1 + contaContatos(root->left) + contaContatos(root->right));
 }
 
 // Função que copia os contatos da árvore para um vetor de contatos
@@ -127,8 +127,8 @@ void copiaAgenda(Contatos *agenda, Contact *root, int i) {
         strcpy(agenda[i].email, root->email);
         strcpy(agenda[i].phone, root->phone);
         i++;
-        copiaAgenda(agenda, root->prev, i);
-        copiaAgenda(agenda, root->next, i+contaContatos(root->prev));
+        copiaAgenda(agenda, root->left, i);
+        copiaAgenda(agenda, root->right, i+contaContatos(root->left));
     }
 }
 
@@ -199,10 +199,10 @@ Contact *searchContact(Contact *root, char *name) {
         return root;
     }
     if (strcmp(root->name, name) > 0) {
-        return searchContact(root->prev, name);
+        return searchContact(root->left, name);
     }
     else {
-        return searchContact(root->next, name);
+        return searchContact(root->right, name);
     }
 }
 
@@ -228,7 +228,8 @@ Contact *readArq(Contact *root){
     fseek(arq, 0, SEEK_SET);
     while(!feof(arq)){
         aux = malloc(sizeof(Contact));
-        fscanf(arq, "%s\n", aux->name);
+        fgets(aux->name, 30, arq);
+        aux->name[strcspn(aux->name, "\n")] = '\0';
         fscanf(arq, "%s\n", aux->email);
         fscanf(arq, "%s\n", aux->phone);
         root = insContact(root, aux);
@@ -242,7 +243,6 @@ void writeArq(Contact *root){
     int n = contaContatos(root);
     Contatos agenda[n];
     copiaAgenda(agenda, root, 0);
-    mergeSort(agenda, 0, (n-1));
 
     FILE *arq = fopen("Agenda.txt", "w+");
     fseek(arq, 0, SEEK_SET);
