@@ -1,7 +1,7 @@
 /* 
 *   Pesquisa e ordenação de dados
 *   Trabalho Final
-*   Acadêmicas: Karen Ruver Mentges (matrícula: )
+*   Acadêmicas: Karen Ruver Mentges (matrícula: 1921100003)
 *               Izabela Fusieger (matrícula: 1921101019)
 */
 
