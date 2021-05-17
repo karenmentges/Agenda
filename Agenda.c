@@ -289,11 +289,11 @@ int main() {
                 fgets(aux->name, sizeof(aux->name), stdin);
                 aux->name[strcspn(aux->name, "\n")] = '\0';
 
-                printf("Informe email do contato: ");
+                printf("Informe o email do contato: ");
                 fgets(aux->email, sizeof(aux->email), stdin);
                 aux->email[strcspn(aux->email, "\n")] = '\0';
 
-                printf("Informe seu telefone do contato: ");
+                printf("Informe o telefone do contato: ");
                 fgets(aux->phone, sizeof(aux->phone), stdin);
                 aux->phone[strcspn(aux->phone, "\n")] = '\0';
                 
